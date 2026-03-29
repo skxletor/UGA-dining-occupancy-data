@@ -179,5 +179,9 @@ connectDB().then(() => {
     console.log(`Server running on port ${PORT}`);
     // Do one fetch right away when the server starts
     fetchAndSave();
+
+    // Then fetch every 5 minutes automatically (5 * 60 * 1000 = 300000 milliseconds)
+    setInterval(fetchAndSave, 5 * 60 * 1000);
+    console.log("Auto-fetch scheduled every 5 minutes");
   });
 });
