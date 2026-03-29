@@ -1,0 +1,13 @@
+{
+  "name": "uga-dining-tracker",
+  "version": "1.0.0",
+  "description": "Tracks UGA dining hall occupancy every 5 minutes",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongodb": "^6.3.0"
+  }
+}
