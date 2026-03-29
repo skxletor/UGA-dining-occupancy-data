@@ -76,7 +76,72 @@ app.get("/ping", async (req, res) => {
   await fetchAndSave();
   res.send("Pinged and data collected!");
 });
+// Data preview route - view latest data in your browser
+app.get("/data", async (req, res) => {
+  try {
+    // Grab the most recent 50 records, newest first
+    const records = await db.collection("occupancy").find({}).sort({ timestamp: -1 }).limit(50).toArray();
 
+    if (records.length === 0) {
+      res.send("No data collected yet!");
+      return;
+    }
+
+    // Build a simple HTML table
+    let html = `
+      <html>
+      <head>
+        <title>UGA Dining Occupancy Data</title>
+        <style>
+          body { font-family: Arial, sans-serif; padding: 20px; }
+          table { border-collapse: collapse; width: 100%; }
+          th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+          th { background-color: #BA0C2F; color: white; }
+          tr:nth-child(even) { background-color: #f2f2f2; }
+          h1 { color: #BA0C2F; }
+        </style>
+      </head>
+      <body>
+        <h1>UGA Dining Hall Occupancy</h1>
+        <p>Showing last ${records.length} readings (newest first)</p>
+        <p><a href="/download">Download full CSV</a></p>
+        <table>
+          <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Day</th>
+            <th>Bolton</th>
+            <th>Oglethorpe</th>
+            <th>Niche</th>
+            <th>Snelling</th>
+            <th>Village Summit</th>
+          </tr>`;
+
+    for (const r of records) {
+      html += `
+          <tr>
+            <td>${r.date}</td>
+            <td>${r.time}</td>
+            <td>${r.dayOfWeek}</td>
+            <td>${r.bolton}%</td>
+            <td>${r.oglethorpe}%</td>
+            <td>${r.niche}%</td>
+            <td>${r.snelling}%</td>
+            <td>${r.villageSummit}%</td>
+          </tr>`;
+    }
+
+    html += `
+        </table>
+      </body>
+      </html>`;
+
+    res.send(html);
+  } catch (err) {
+    console.error("Error displaying data:", err);
+    res.status(500).send("Error displaying data");
+  }
+});
 // Download route - visit this to download all collected data as a CSV file
 app.get("/download", async (req, res) => {
   try {
