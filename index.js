@@ -11,7 +11,10 @@ const app = express();
 
 // --- CONNECT TO MONGODB ---
 let db;
-const client = new MongoClient(MONGODB_URI);
+const client = new MongoClient(MONGODB_URI, {
+  tls: true,
+  tlsAllowInvalidCertificates: false
+});
 
 async function connectDB() {
   try {
